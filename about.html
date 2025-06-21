@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inlighn Tech | Empowering Internships</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <!-- AOS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- Font Awesome for hamburger icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- particles.js -->
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #00c896;
+            --dark: #021a1a;
+            --light: #e6fff5;
+            --gradient: linear-gradient(135deg, #00ffcb, #00bfa5);
+            --font: 'Outfit', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--dark);
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* Mirror Break Transition Styles */
+        .transition-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        .video-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .broken-mirror {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            grid-template-rows: repeat(10, 1fr);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .mirror-piece {
+            background-color: #000;
+            transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: scale(1);
+            opacity: 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .website-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            transform: translate(-50%, -50%);
+            background: #fff;
+            z-index: 3;
+            overflow: hidden;
+            border-radius: 5px;
+            box-shadow: 0 0 0 10px rgba(255, 255, 255, 0.2);
+            transition: all 2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .website-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Main Website Styles (initially hidden) */
+        #main-website {
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        #main-website.show {
+            opacity: 1;
+        }
+
+        #particles-js {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        /* Responsive Navigation - Fixed Version */
+        nav {
+            background: var(--dark);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 1001;
+        }
+
+        .logo img {
+            width: 60px;
+            height: auto;
+            border-radius: 50%;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 25px;
+            flex-wrap: wrap;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links li a {
+            text-decoration: none;
+            color: var(--light);
+            font-weight: 500;
+            position: relative;
+            transition: color 0.3s;
+        }
+
+        .nav-links li a::after {
+            content: "";
+            position: absolute;
+            width: 0%;
+            height: 2px;
+            background: var(--primary);
+            bottom: -4px;
+            left: 0;
+            transition: width 0.3s;
+        }
+
+        .nav-links li a:hover::after {
+            width: 100%;
+        }
+
+        .nav-links li a:hover {
+            color: var(--primary);
+        }
+
+        .cta-btn {
+            background: var(--primary);
+            color: #000;
+            padding: 10px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .cta-btn:hover {
+            background: white;
+            color: var(--primary);
+        }
+
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            font-size: 24px;
+            color: var(--light);
+        }
+
+        /* Mobile Styles */
+        @media (max-width: 992px) {
+            nav {
+                padding: 15px 30px;
+            }
+
+            .nav-links {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: var(--dark);
+                flex-direction: column;
+                gap: 0;
+                padding: 0;
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.3s ease;
+                z-index: 1000;
+                box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            }
+
+            .nav-links.active {
+                max-height: 500px;
+                padding: 20px 0;
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .nav-links li {
+                padding: 10px 30px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .nav-links li:last-child {
+                border-bottom: none;
+            }
+
+            .cta-btn {
+                display: block;
+                margin: 15px 30px 0;
+                text-align: center;
+            }
+
+            .hamburger {
+                display: block;
+            }
+
+            .nav-links li a::after {
+                display: none;
+            }
+        }
+
+        @media (max-width: 576px) {
+            nav {
+                padding: 15px 20px;
+            }
+
+            .logo img {
+                width: 50px;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+        }
+
+        section {
+            padding: 80px 10%;
+            position: relative;
+            z-index: 2;
+        }
+
+        h1,
+        h2,
+        h3 {
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            min-height: 90vh;
+            padding-top: 30px;
+        }
+
+        @media (max-width: 992px) {
+            .hero {
+                padding-top: 80px;
+            }
+        }
+
+        .hero img {
+            width: 100%;
+            max-width: 450px;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .hero-content {
+            max-width: 600px;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: #ccc;
+            margin-bottom: 30px;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            text-align: center;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 16px;
+            backdrop-filter: blur(6px);
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.1);
+        }
+
+        .stat-box h2 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .stat-box p {
+            color: #aaa;
+        }
+
+        .achievements,
+        .benefits,
+        .contact {
+            background: #001414;
+            border-top: 1px solid #003333;
+            border-bottom: 1px solid #003333;
+        }
+
+        .certs {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .certs img {
+            width: 300px;
+            border-radius: 12px;
+            transition: transform 0.3s ease;
+        }
+
+        .certs img:hover {
+            transform: scale(1.05);
+        }
+
+        .benefits-grid {
+            display: flex;
+            gap: 30px;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+
+        .benefit {
+            max-width: 280px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .benefit img {
+            width: 60px;
+            margin-bottom: 15px;
+        }
+
+        form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        input,
+        textarea {
+            background: #012020;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            width: 45%;
+            color: white;
+        }
+
+        textarea {
+            width: 94%;
+            height: 120px;
+        }
+
+        button {
+            background: var(--primary);
+            color: #000;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        footer {
+            background: #000;
+            padding: 40px 10%;
+            text-align: center;
+            color: #aaa;
+        }
+
+        footer a {
+            color: #00c896;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Mirror Break Transition Elements -->
+    <div class="transition-container" id="transitionContainer">
+        <div class="video-container">
+            <video class="video" autoplay muted loop>
+                <source src="https://res.cloudinary.com/dasm9k1z9/video/upload/v1750505565/5680034-hd_1920_1080_24fps_w0ywrb.mp4" type="video/mp4">
+                Your browser does not support HTML5 video.
+            </video>
+        </div>
+
+        <div class="broken-mirror" id="brokenMirror"></div>
+    </div>
+
+    <!-- Main Website Content (initially hidden) -->
+    <div id="main-website">
+        <div id="particles-js"></div>
+
+        <nav>
+            <div class="logo">
+                <img src="https://www.inlighntech.com/wp-content/uploads/2025/04/inlighn-tech-logo.png" alt="logo">
+            </div>
+
+            <div class="hamburger" id="hamburger">
+                <i class="fas fa-bars"></i>
+            </div>
+
+            <ul class="nav-links" id="navLinks">
+                <li><a href="https://animatedwebsire.ccbp.tech" class="active">Home</a></li>
+                <li><a href="https://iitabout.ccbp.tech/">About Us</a></li>
+                <li><a href="https://iitbprograms.ccbp.tech/">Programs</a></li>
+                <li><a href="https://iitbverify.ccbp.tech/">Verify Certificate</a></li>
+                <li><a href="https://iitbwhatspecial.ccbp.tech/">What's Special</a></li>
+                <li><a href="https://ittbcontact.ccbp.tech/">Contact Us</a></li>
+                <li><a href="https://iitblogin.ccbp.tech/" class="cta-btn">Login to Portal</a></li>
+            </ul>
+        </nav>
+
+        <section class="hero">
+            <div class="hero-content" data-aos="fade-up">
+                <h1>Experience, Learn & Thrive with <strong>INLIGHN TECH</strong></h1>
+                <p>Real-world Internship Programs in Full Stack, Data Science, Cyber Security and More.</p>
+                <a href="#" class="cta-btn">Explore Internships</a>
+            </div>
+            <img src="https://www.inlighntech.com/wp-content/uploads/2025/05/Green-Corporate-Financial-Roadmap-Presentation-3.png" alt="hero-img">
+        </section>
+
+        <section class="stats">
+            <div class="stat-box" data-aos="zoom-in">
+                <h2>5000+</h2>
+                <p>Interns Enrolled</p>
+            </div>
+            <div class="stat-box" data-aos="zoom-in">
+                <h2>9000+</h2>
+                <p>Projects Completed</p>
+            </div>
+            <div class="stat-box" data-aos="zoom-in">
+                <h2>93%</h2>
+                <p>Satisfaction Rate</p>
+            </div>
+            <div class="stat-box" data-aos="zoom-in">
+                <h2>30+</h2>
+                <p>Top Instructors</p>
+            </div>
+        </section>
+
+        <section class="achievements">
+            <h2 data-aos="fade-up">Our Recognitions</h2>
+            <div class="certs">
+                <img src="https://www.inlighntech.com/wp-content/uploads/2025/04/Screenshot-2025-04-30-164507.png" alt="Incorporation">
+                <img src="https://www.inlighntech.com/wp-content/uploads/2025/04/WhatsApp-Image-2025-04-30-at-16.32.01_07ba59ed-780x777.jpg" alt="Startup India">
+            </div>
+        </section>
+
+        <section class="benefits">
+            <h2 data-aos="fade-up">Why Choose INLIGHN TECH?</h2>
+            <div class="benefits-grid">
+                <div class="benefit" data-aos="flip-left">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3105/3105807.png" alt="Resource">
+                    <h3>Quality Resources</h3>
+                    <p>Hands-on materials, real-world examples, and personalized mentorship.</p>
+                </div>
+                <div class="benefit" data-aos="flip-left">
+                    <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Instructor">
+                    <h3>Expert Mentors</h3>
+                    <p>Industry professionals providing real experience-based guidance.</p>
+                </div>
+                <div class="benefit" data-aos="flip-left">
+                    <img src="https://cdn-icons-png.flaticon.com/512/876/876019.png" alt="Portal">
+                    <h3>Portal Access</h3>
+                    <p>Learn at your own pace, stay updated post-program.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="contact">
+            <h2 data-aos="fade-up">Get In Touch</h2>
+            <form data-aos="fade-up">
+                <input type="text" placeholder="Full Name">
+                <input type="email" placeholder="Email">
+                <input type="text" placeholder="Domain of Internship">
+                <input type="text" placeholder="State">
+                <textarea placeholder="Message"></textarea>
+                <button type="submit">Submit</button>
+            </form>
+        </section>
+
+        <footer>
+            <p>© 2025 INLIGHN TECH | Designed by Gdscreatives | <a href="#">Privacy Policy</a></p>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Initialize AOS after transition
+        function initMainWebsite() {
+            AOS.init();
+            particlesJS("particles-js", {
+                "particles": {
+                    "number": {
+                        "value": 80,
+                        "density": {
+                            "enable": true,
+                            "value_area": 800
+                        }
+                    },
+                    "color": {
+                        "value": "#00ffc8"
+                    },
+                    "shape": {
+                        "type": "circle"
+                    },
+                    "opacity": {
+                        "value": 0.3
+                    },
+                    "size": {
+                        "value": 4
+                    },
+                    "line_linked": {
+                        "enable": true,
+                        "distance": 150,
+                        "color": "#00ffc8",
+                        "opacity": 0.2,
+                        "width": 1
+                    },
+                    "move": {
+                        "enable": true,
+                        "speed": 2
+                    }
+                },
+                "interactivity": {
+                    "events": {
+                        "onhover": {
+                            "enable": true,
+                            "mode": "grab"
+                        },
+                        "onclick": {
+                            "enable": true,
+                            "mode": "push"
+                        }
+                    },
+                    "modes": {
+                        "grab": {
+                            "distance": 200,
+                            "line_linked": {
+                                "opacity": 0.4
+                            }
+                        },
+                        "push": {
+                            "particles_nb": 4
+                        }
+                    }
+                },
+                "retina_detect": true
+            });
+        }
+
+        // Create mirror pieces
+        const brokenMirror = document.getElementById('brokenMirror');
+        const rows = 10;
+        const cols = 10;
+
+        for (let i = 0; i < rows * cols; i++) {
+            const piece = document.createElement('div');
+            piece.className = 'mirror-piece';
+            brokenMirror.appendChild(piece);
+        }
+
+        // After 3 seconds, break the mirror and reveal website
+        setTimeout(() => {
+            // Animate mirror breaking
+            const pieces = document.querySelectorAll('.mirror-piece');
+            pieces.forEach((piece, index) => {
+                // Random animation properties
+                const delay = Math.random() * 0.5;
+                const rotation = (Math.random() * 60) - 30;
+                const x = (Math.random() * 200) - 100;
+                const y = (Math.random() * 200) - 100;
+                const scale = 0.5 + Math.random() * 0.5;
+
+                piece.style.transitionDelay = `${delay}s`;
+                piece.style.opacity = '0.8';
+                piece.style.transform = `scale(${scale}) rotate(${rotation}deg) translate(${x}px, ${y}px)`;
+                piece.style.background = 'rgba(0, 0, 0, 0.7)';
+            });
+
+            // Start showing main website after mirror breaks
+            setTimeout(() => {
+                document.getElementById('main-website').classList.add('show');
+                initMainWebsite();
+            }, 800);
+
+            // Remove transition elements after all animations
+            setTimeout(() => {
+                document.getElementById('transitionContainer').style.display = 'none';
+            }, 3500);
+
+        }, 3000); // Start animation after 3 seconds
+
+        // Mobile Navigation Toggle
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('navLinks');
+
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+
+            // Change hamburger icon
+            const icon = hamburger.querySelector('i');
+            if (navLinks.classList.contains('active')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        });
+
+        // Close mobile menu when clicking on a link
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 992) {
+                    navLinks.classList.remove('active');
+                    const icon = hamburger.querySelector('i');
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-bars');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

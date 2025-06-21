@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contact | Inlighn Tech</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <!-- AOS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- Font Awesome for hamburger icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- particles.js -->
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #00c896;
+            --dark: #021a1a;
+            --light: #e6fff5;
+            --gradient: linear-gradient(135deg, #00ffcb, #00bfa5);
+            --font: 'Outfit', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--dark);
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* Mirror Break Transition Styles */
+        .transition-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        .video-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .broken-mirror {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            grid-template-rows: repeat(10, 1fr);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .mirror-piece {
+            background-color: #000;
+            transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: scale(1);
+            opacity: 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Main Website Styles (initially hidden) */
+        #main-website {
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        #main-website.show {
+            opacity: 1;
+        }
+
+        #particles-js {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        /* Responsive Navigation - Fixed Version */
+        nav {
+            background: var(--dark);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 1001;
+        }
+
+        .logo img {
+            width: 60px;
+            height: auto;
+            border-radius: 50%;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 25px;
+            flex-wrap: wrap;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links li a {
+            text-decoration: none;
+            color: var(--light);
+            font-weight: 500;
+            position: relative;
+            transition: color 0.3s;
+        }
+
+        .nav-links li a::after {
+            content: "";
+            position: absolute;
+            width: 0%;
+            height: 2px;
+            background: var(--primary);
+            bottom: -4px;
+            left: 0;
+            transition: width 0.3s;
+        }
+
+        .nav-links li a:hover::after {
+            width: 100%;
+        }
+
+        .nav-links li a:hover {
+            color: var(--primary);
+        }
+
+        .cta-btn {
+            background: var(--primary);
+            color: #000;
+            padding: 10px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .cta-btn:hover {
+            background: white;
+            color: var(--primary);
+        }
+
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            font-size: 24px;
+            color: var(--light);
+        }
+
+        /* Mobile Styles */
+        @media (max-width: 992px) {
+            nav {
+                padding: 15px 30px;
+            }
+
+            .nav-links {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: var(--dark);
+                flex-direction: column;
+                gap: 0;
+                padding: 0;
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.3s ease;
+                z-index: 1000;
+                box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            }
+
+            .nav-links.active {
+                max-height: 500px;
+                padding: 20px 0;
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .nav-links li {
+                padding: 10px 30px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .nav-links li:last-child {
+                border-bottom: none;
+            }
+
+            .cta-btn {
+                display: block;
+                margin: 15px 30px 0;
+                text-align: center;
+            }
+
+            .hamburger {
+                display: block;
+            }
+
+            .nav-links li a::after {
+                display: none;
+            }
+        }
+
+        @media (max-width: 576px) {
+            nav {
+                padding: 15px 20px;
+            }
+
+            .logo img {
+                width: 50px;
+            }
+        }
+
+        section {
+            padding: 80px 10%;
+            position: relative;
+            z-index: 2;
+        }
+
+        h1,
+        h2,
+        h3 {
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 16px;
+            backdrop-filter: blur(6px);
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+        }
+
+        .card img {
+            width: 50px;
+            margin-bottom: 20px;
+        }
+
+        .card h3 {
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            color: #ccc;
+            font-size: 0.95rem;
+        }
+
+        form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        input,
+        textarea {
+            background: #012020;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            width: 45%;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px var(--primary);
+        }
+
+        textarea {
+            width: 94%;
+            height: 120px;
+        }
+
+        button[type="submit"] {
+            background: var(--primary);
+            color: #000;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 200, 150, 0.3);
+        }
+
+        .faq {
+            background: #012020;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .faq:hover {
+            background: #013030;
+        }
+
+        .faq h3 {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.1rem;
+        }
+
+        .faq-content {
+            display: none;
+            padding-top: 10px;
+            color: #ccc;
+        }
+
+        .faq.active .faq-content {
+            display: block;
+        }
+
+        footer {
+            background: #002c2c;
+            color: #fff;
+            padding: 60px 10% 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            font-size: 0.95rem;
+        }
+
+        .footer-col h4 {
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .footer-col ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-col ul li a {
+            color: #ccc;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 8px;
+            transition: color 0.3s;
+        }
+
+        .footer-col ul li a:hover {
+            color: var(--primary);
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 30px;
+            color: #aaa;
+            font-size: 0.9rem;
+            grid-column: 1 / -1;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Mirror Break Transition Elements -->
+    <div class="transition-container" id="transitionContainer">
+        <div class="video-container">
+            <video class="video" autoplay muted loop>
+                <source
+                    src="https://res.cloudinary.com/dasm9k1z9/video/upload/v1750505565/5680034-hd_1920_1080_24fps_w0ywrb.mp4"
+                    type="video/mp4">
+                Your browser does not support HTML5 video.
+            </video>
+        </div>
+
+        <div class="broken-mirror" id="brokenMirror"></div>
+    </div>
+
+    <!-- Main Website Content (initially hidden) -->
+    <div id="main-website">
+        <div id="particles-js"></div>
+
+        <nav>
+            <div class="logo">
+                <img src="https://www.inlighntech.com/wp-content/uploads/2025/04/inlighn-tech-logo.png"
+                    alt="Inlighn Tech Logo">
+            </div>
+
+            <div class="hamburger" id="hamburger">
+                <i class="fas fa-bars"></i>
+            </div>
+
+            <ul class="nav-links" id="navLinks">
+                <li><a href="https://animatedwebsire.ccbp.tech">Home</a></li>
+                <li><a href="https://iitabout.ccbp.tech/">About Us</a></li>
+                <li><a href="https://iitbprograms.ccbp.tech/">Programs</a></li>
+                <li><a href="https://iitbverify.ccbp.tech/">Verify Certificate</a></li>
+                <li><a href="https://iitbwhatspecial.ccbp.tech/">What's Special</a></li>
+                <li><a href="https://ittbcontact.ccbp.tech/" class="active">Contact Us</a></li>
+                <li><a href="https://iitblogin.ccbp.tech/" class="cta-btn">Login to Portal</a></li>
+            </ul>
+        </nav>
+
+        <section>
+            <h2 class="section-title" data-aos="fade-up">Contact Information</h2>
+            <div class="grid-container">
+                <div class="card" data-aos="fade-up" data-aos-delay="100">
+                    <img src="https://www.inlighntech.com/wp-content/uploads/2025/04/Screenshot-2025-04-10-193606.png"
+                        alt="Email">
+                    <h3>Email Address</h3>
+                    <p>info@inlighntech.com</p>
+                </div>
+                <div class="card" data-aos="fade-up" data-aos-delay="200">
+                    <img src="https://img.icons8.com/fluency/48/phone-disconnected.png" alt="Phone">
+                    <h3>Call Us</h3>
+                    <p>+91-9368842663</p>
+                </div>
+                <div class="card" data-aos="fade-up" data-aos-delay="300">
+                    <img src="https://img.icons8.com/fluency/48/marker.png" alt="Location">
+                    <h3>Visit Our Office</h3>
+                    <p>VO-301, WeWork Prestige Central, Ground Floor, 36 Infantry Rd, Shivaji Nagar, Bengaluru,
+                        Karnataka 560001</p>
+                </div>
+                <div class="card" data-aos="fade-up" data-aos-delay="400">
+                    <img src="https://img.icons8.com/fluency/48/company.png" alt="Registered">
+                    <h3>Registered Office</h3>
+                    <p>Opposite Swasti Hospital, Anupam Nagar, Badaun Road, Bareilly, Uttar Pradesh 243001</p>
+                </div>
+            </div>
+
+            <h2 class="section-title" data-aos="fade-up">Send Us a Message</h2>
+            <form data-aos="fade-up">
+                <input type="text" placeholder="Full Name" required>
+                <input type="email" placeholder="Email" required>
+                <input type="text" placeholder="Phone">
+                <input type="text" placeholder="Subject">
+                <textarea placeholder="Your Message" required></textarea>
+                <button type="submit">Submit</button>
+            </form>
+        </section>
+
+        <section>
+            <h2 class="section-title" data-aos="fade-up">FAQ's</h2>
+            <div class="faq" data-aos="fade-up">
+                <h3>What makes Inlighn Tech different from other platforms? <span>+</span></h3>
+                <div class="faq-content">Inlighn Tech provides top-quality learning modules and projects based on the
+                    latest industry technologies and trends.</div>
+            </div>
+            <div class="faq" data-aos="fade-up">
+                <h3>How can I register for an internship? <span>+</span></h3>
+                <div class="faq-content">Visit the registration page and complete the form with the required
+                    information.</div>
+            </div>
+            <div class="faq" data-aos="fade-up">
+                <h3>After filling out the registration form, whom should I contact? <span>+</span></h3>
+                <div class="faq-content">You can reach us at info@inlighntech.com or call our support number.</div>
+            </div>
+            <div class="faq" data-aos="fade-up">
+                <h3>Is it mandatory to submit a project only from the portal options? <span>+</span></h3>
+                <div class="faq-content">Yes, we encourage selecting from the curated project list for better
+                    evaluation.</div>
+            </div>
+            <div class="faq" data-aos="fade-up">
+                <h3>Can I earn a certificate after internship? <span>+</span></h3>
+                <div class="faq-content">Yes, we provide a certificate upon successful completion of the internship.
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <div class="footer-col">
+                <h4>Menu</h4>
+                <ul>
+                    <li><a href="https://hackthoniitb.ccbp.tech/">Home</a></li>
+                    <li><a href="https://iitabout.ccbp.tech/">About Us</a></li>
+                    <li><a href="https://iitbprograms.ccbp.tech/">Programs</a></li>
+                    <li><a href="https://ittbcontact.ccbp.tech/">Contact Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms & Conditions</a></li>
+                    <li><a href="#">FAQ's</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Contact</h4>
+                <p>📞 +91 9368842663</p>
+                <p>✉️ info@inlighntech.com</p>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 INLIGHN TECH | All Rights Reserved | Design by <span
+                        style="color:#ff6e6e">Gdscreatives</span></p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Initialize AOS after transition
+        function initMainWebsite() {
+            AOS.init({
+                duration: 800,
+                easing: 'ease-in-out',
+                once: true
+            });
+
+            particlesJS("particles-js", {
+                "particles": {
+                    "number": {
+                        "value": 80,
+                        "density": {
+                            "enable": true,
+                            "value_area": 800
+                        }
+                    },
+                    "color": {
+                        "value": "#00ffc8"
+                    },
+                    "shape": {
+                        "type": "circle"
+                    },
+                    "opacity": {
+                        "value": 0.3
+                    },
+                    "size": {
+                        "value": 4
+                    },
+                    "line_linked": {
+                        "enable": true,
+                        "distance": 150,
+                        "color": "#00ffc8",
+                        "opacity": 0.2,
+                        "width": 1
+                    },
+                    "move": {
+                        "enable": true,
+                        "speed": 2
+                    }
+                },
+                "interactivity": {
+                    "events": {
+                        "onhover": {
+                            "enable": true,
+                            "mode": "grab"
+                        },
+                        "onclick": {
+                            "enable": true,
+                            "mode": "push"
+                        }
+                    },
+                    "modes": {
+                        "grab": {
+                            "distance": 200,
+                            "line_linked": {
+                                "opacity": 0.4
+                            }
+                        },
+                        "push": {
+                            "particles_nb": 4
+                        }
+                    }
+                },
+                "retina_detect": true
+            });
+        }
+
+        // Create mirror pieces
+        const brokenMirror = document.getElementById('brokenMirror');
+        const rows = 10;
+        const cols = 10;
+
+        for (let i = 0; i < rows * cols; i++) {
+            const piece = document.createElement('div');
+            piece.className = 'mirror-piece';
+            brokenMirror.appendChild(piece);
+        }
+
+        // After 3 seconds, break the mirror and reveal website
+        setTimeout(() => {
+            // Animate mirror breaking
+            const pieces = document.querySelectorAll('.mirror-piece');
+            pieces.forEach((piece, index) => {
+                // Random animation properties
+                const delay = Math.random() * 0.5;
+                const rotation = (Math.random() * 60) - 30;
+                const x = (Math.random() * 200) - 100;
+                const y = (Math.random() * 200) - 100;
+                const scale = 0.5 + Math.random() * 0.5;
+
+                piece.style.transitionDelay = `${delay}s`;
+                piece.style.opacity = '0.8';
+                piece.style.transform = `scale(${scale}) rotate(${rotation}deg) translate(${x}px, ${y}px)`;
+                piece.style.background = 'rgba(0, 0, 0, 0.7)';
+            });
+
+            // Start showing main website after mirror breaks
+            setTimeout(() => {
+                document.getElementById('main-website').classList.add('show');
+                initMainWebsite();
+            }, 800);
+
+            // Remove transition elements after all animations
+            setTimeout(() => {
+                document.getElementById('transitionContainer').style.display = 'none';
+            }, 3500);
+
+        }, 3000); // Start animation after 3 seconds
+
+        // Mobile Navigation Toggle
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('navLinks');
+
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+
+            // Change hamburger icon
+            const icon = hamburger.querySelector('i');
+            if (navLinks.classList.contains('active')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        });
+
+        // Close mobile menu when clicking on a link
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 992) {
+                    navLinks.classList.remove('active');
+                    const icon = hamburger.querySelector('i');
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-bars');
+                }
+            });
+        });
+
+        // FAQ functionality
+        const faqs = document.querySelectorAll('.faq');
+        faqs.forEach(faq => {
+            faq.addEventListener('click', () => {
+                faq.classList.toggle('active');
+                const span = faq.querySelector('span');
+                span.textContent = faq.classList.contains('active') ? '−' : '+';
+            });
+        });
+    </script>
+</body>
+
+</html>

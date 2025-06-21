@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Mirror Break Transition</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #000;
+            font-family: 'Arial', sans-serif;
+        }
+
+        /* Video Background */
+        .video-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            filter: brightness(0.8) contrast(1.2);
+        }
+
+        .video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* 3D Mirror Grid */
+        .mirror-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            perspective: 2000px;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .mirror-grid {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(15, 1fr);
+            grid-template-rows: repeat(15, 1fr);
+            transform-style: preserve-3d;
+        }
+
+        .mirror-piece {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 1.8s cubic-bezier(0.16, 1, 0.3, 1);
+            transform-style: preserve-3d;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mirror-piece::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(0, 200, 150, 0.1), transparent);
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        /* Particle Background */
+        #particles-js {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0;
+            transition: opacity 2s;
+        }
+
+        /* Website Reveal */
+        .website-reveal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            transform: translate(-50%, -50%);
+            background: #000;
+            z-index: 10;
+            overflow: hidden;
+            border-radius: 50%;
+            box-shadow: 0 0 0 0 rgba(0, 200, 150, 0.5);
+            transition: all 2s cubic-bezier(0.075, 0.82, 0.165, 1);
+        }
+
+        .website-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            opacity: 0;
+            transition: opacity 1s;
+        }
+
+        /* Loading Text */
+        .loading-text {
+            position: fixed;
+            top: 70%;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.2rem;
+            z-index: 5;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .loading-dots {
+            display: inline-block;
+            width: 20px;
+            text-align: left;
+        }
+
+        /* 3D Scene */
+        #three-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        /* Glitch Effect */
+        .glitch-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABLSURBVGhD7cExAQAwDMCg+zfd2VAK5MNHkCRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiRJkiTpBx9qAhK0Qh2FAAAAAElFTkSuQmCC');
+            z-index: 4;
+            opacity: 0;
+            mix-blend-mode: overlay;
+            pointer-events: none;
+            animation: glitch 0.5s infinite alternate;
+        }
+
+        @keyframes glitch {
+            0% {
+                transform: translate(0);
+            }
+
+            20% {
+                transform: translate(-2px, 2px);
+            }
+
+            40% {
+                transform: translate(-2px, -2px);
+            }
+
+            60% {
+                transform: translate(2px, 2px);
+            }
+
+            80% {
+                transform: translate(2px, -2px);
+            }
+
+            100% {
+                transform: translate(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Video Background -->
+    <div class="video-container">
+        <video class="video" autoplay muted loop>
+            <source
+                src="https://res.cloudinary.com/dasm9k1z9/video/upload/v1750505565/5680034-hd_1920_1080_24fps_w0ywrb.mp4"
+                type="video/mp4">
+            Your browser does not support HTML5 video.
+        </video>
+    </div>
+
+    <!-- Particle Background -->
+    <div id="particles-js"></div>
+
+    <!-- 3D Mirror Grid -->
+    <div class="mirror-container">
+        <div class="mirror-grid" id="mirrorGrid"></div>
+    </div>
+
+    <!-- Loading Text -->
+    <div class="loading-text">
+        Loading<span class="loading-dots">...</span>
+    </div>
+
+    <!-- 3D Scene -->
+    <div id="three-container"></div>
+
+    <!-- Glitch Effect -->
+    <div class="glitch-overlay"></div>
+
+    <!-- Website Reveal -->
+    <div class="website-reveal" id="websiteReveal">
+        <iframe class="website-iframe" src="https://hackthoniitb.ccbp.tech"></iframe>
+    </div>
+
+    <script>
+        // Initialize Three.js scene
+        const threeContainer = document.getElementById('three-container');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({
+            alpha: true,
+            antialias: true
+        });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        threeContainer.appendChild(renderer.domElement);
+
+        // Add floating geometry
+        const geometry = new THREE.IcosahedronGeometry(1, 0);
+        const material = new THREE.MeshBasicMaterial({
+            color: 0x00c896,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.5
+        });
+
+        const meshes = [];
+        for (let i = 0; i < 15; i++) {
+            const mesh = new THREE.Mesh(geometry, material);
+            mesh.position.x = (Math.random() - 0.5) * 10;
+            mesh.position.y = (Math.random() - 0.5) * 10;
+            mesh.position.z = (Math.random() - 0.5) * 10;
+            mesh.scale.setScalar(Math.random() * 0.5 + 0.5);
+            scene.add(mesh);
+            meshes.push(mesh);
+        }
+
+        camera.position.z = 5;
+
+        // Animation loop for Three.js
+        function animate() {
+            requestAnimationFrame(animate);
+
+            meshes.forEach(mesh => {
+                mesh.rotation.x += 0.005;
+                mesh.rotation.y += 0.01;
+                mesh.position.y += 0.001;
+                if (mesh.position.y > 5) mesh.position.y = -5;
+            });
+
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Create mirror pieces with 3D effect
+        const mirrorGrid = document.getElementById('mirrorGrid');
+        const rows = 15;
+        const cols = 15;
+
+        for (let i = 0; i < rows * cols; i++) {
+            const piece = document.createElement('div');
+            piece.className = 'mirror-piece';
+
+            // Add reflection effect to some pieces
+            if (Math.random() > 0.7) {
+                piece.style.boxShadow = 'inset 0 0 20px rgba(0, 200, 150, 0.3)';
+            }
+
+            mirrorGrid.appendChild(piece);
+        }
+
+        // Initialize particles.js
+        particlesJS('particles-js', {
+            "particles": {
+                "number": {
+                    "value": 80,
+                    "density": {
+                        "enable": true,
+                        "value_area": 800
+                    }
+                },
+                "color": {
+                    "value": "#00c896"
+                },
+                "shape": {
+                    "type": "circle",
+                    "stroke": {
+                        "width": 0,
+                        "color": "#000000"
+                    }
+                },
+                "opacity": {
+                    "value": 0.5,
+                    "random": true,
+                    "anim": {
+                        "enable": true,
+                        "speed": 1,
+                        "opacity_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "size": {
+                    "value": 3,
+                    "random": true,
+                    "anim": {
+                        "enable": true,
+                        "speed": 2,
+                        "size_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "line_linked": {
+                    "enable": true,
+                    "distance": 150,
+                    "color": "#00c896",
+                    "opacity": 0.2,
+                    "width": 1
+                },
+                "move": {
+                    "enable": true,
+                    "speed": 2,
+                    "direction": "none",
+                    "random": true,
+                    "straight": false,
+                    "out_mode": "out",
+                    "bounce": false,
+                    "attract": {
+                        "enable": true,
+                        "rotateX": 600,
+                        "rotateY": 1200
+                    }
+                }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": {
+                    "onhover": {
+                        "enable": true,
+                        "mode": "grab"
+                    },
+                    "onclick": {
+                        "enable": true,
+                        "mode": "push"
+                    },
+                    "resize": true
+                },
+                "modes": {
+                    "grab": {
+                        "distance": 140,
+                        "line_linked": {
+                            "opacity": 0.5
+                        }
+                    },
+                    "push": {
+                        "particles_nb": 4
+                    }
+                }
+            },
+            "retina_detect": true
+        });
+
+        // Show loading text
+        const loadingText = document.querySelector('.loading-text');
+        const loadingDots = document.querySelector('.loading-dots');
+        let dotCount = 0;
+
+        setTimeout(() => {
+            loadingText.style.opacity = '1';
+
+            const dotInterval = setInterval(() => {
+                dotCount = (dotCount + 1) % 4;
+                loadingDots.textContent = '.'.repeat(dotCount + 1);
+            }, 500);
+        }, 1000);
+
+        // After 3 seconds, break the mirror with advanced effects
+        setTimeout(() => {
+            // Animate mirror breaking with 3D effects
+            const pieces = document.querySelectorAll('.mirror-piece');
+            pieces.forEach((piece, index) => {
+                // Random 3D animation properties
+                const delay = Math.random() * 0.8;
+                const rotationX = (Math.random() * 180) - 90;
+                const rotationY = (Math.random() * 180) - 90;
+                const rotationZ = (Math.random() * 180) - 90;
+                const translateX = (Math.random() * 300) - 150;
+                const translateY = (Math.random() * 300) - 150;
+                const translateZ = (Math.random() * 1000) - 500;
+                const scale = 0.3 + Math.random() * 0.7;
+
+                piece.style.transitionDelay = `${delay}s`;
+                piece.style.opacity = '0.8';
+                piece.style.transform = `
+                    rotateX(${rotationX}deg) 
+                    rotateY(${rotationY}deg) 
+                    rotateZ(${rotationZ}deg) 
+                    translate3d(${translateX}px, ${translateY}px, ${translateZ}px) 
+                    scale(${scale})
+                `;
+                piece.style.background = 'rgba(0, 0, 0, 0.7)';
+
+                // Add reflection animation to some pieces
+                if (Math.random() > 0.7) {
+                    piece.style.boxShadow = 'inset 0 0 30px rgba(0, 200, 150, 0.5)';
+                    piece.style.transition = 'all 1.8s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s ease-in-out';
+                }
+            });
+
+            // Show particles
+            document.getElementById('particles-js').style.opacity = '1';
+
+            // Start glitch effect
+            const glitchOverlay = document.querySelector('.glitch-overlay');
+            glitchOverlay.style.opacity = '0.3';
+
+            // Start showing website after mirror breaks
+            setTimeout(() => {
+                const websiteReveal = document.getElementById('websiteReveal');
+
+                // Animate website reveal with GSAP
+                gsap.to(websiteReveal, {
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: '0',
+                    boxShadow: '0 0 50px rgba(0, 200, 150, 0.8)',
+                    duration: 1.5,
+                    ease: 'power3.out',
+                    onComplete: () => {
+                        document.querySelector('.website-iframe').style.opacity = '1';
+                    }
+                });
+
+                // Hide other elements
+                gsap.to('.mirror-container', {
+                    opacity: 0,
+                    duration: 1
+                });
+                gsap.to('.loading-text', {
+                    opacity: 0,
+                    duration: 0.5
+                });
+                gsap.to('#three-container', {
+                    opacity: 0,
+                    duration: 1
+                });
+                gsap.to('.glitch-overlay', {
+                    opacity: 0,
+                    duration: 0.5
+                });
+
+            }, 1000);
+
+            // Final redirect after all animations
+            setTimeout(() => {
+                window.location.href = "https://hackthoniitb.ccbp.tech";
+            }, 4000);
+
+        }, 3000); // Start animation after 3 seconds
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+
+</html>

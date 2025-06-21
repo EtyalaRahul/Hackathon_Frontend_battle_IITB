@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>What's Special | Inlighn Tech</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        :root {
+            --primary: #00c896;
+            --dark: #021a1a;
+            --light: #e6fff5;
+            --gradient: linear-gradient(135deg, #00ffcb, #00bfa5);
+            --font: 'Outfit', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--dark);
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* Mirror Break Transition Styles */
+        .transition-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        .video-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .broken-mirror {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            grid-template-rows: repeat(10, 1fr);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .mirror-piece {
+            background-color: #000;
+            transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: scale(1);
+            opacity: 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Main Website Styles (initially hidden) */
+        #main-website {
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        #main-website.show {
+            opacity: 1;
+        }
+
+        #particles-js {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        /* Responsive Navigation */
+        nav {
+            background: var(--dark);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 1001;
+        }
+
+        .logo img {
+            width: 60px;
+            height: auto;
+            border-radius: 50%;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 25px;
+            flex-wrap: wrap;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links li a {
+            text-decoration: none;
+            color: var(--light);
+            font-weight: 500;
+            position: relative;
+            transition: color 0.3s;
+        }
+
+        .nav-links li a::after {
+            content: "";
+            position: absolute;
+            width: 0%;
+            height: 2px;
+            background: var(--primary);
+            bottom: -4px;
+            left: 0;
+            transition: width 0.3s;
+        }
+
+        .nav-links li a:hover::after {
+            width: 100%;
+        }
+
+        .nav-links li a:hover {
+            color: var(--primary);
+        }
+
+        .cta-btn {
+            background: var(--primary);
+            color: #000;
+            padding: 10px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .cta-btn:hover {
+            background: white;
+            color: var(--primary);
+        }
+
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            font-size: 24px;
+            color: var(--light);
+        }
+
+        /* Mobile Styles */
+        @media (max-width: 992px) {
+            nav {
+                padding: 15px 30px;
+            }
+
+            .nav-links {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: var(--dark);
+                flex-direction: column;
+                gap: 0;
+                padding: 0;
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.3s ease;
+                z-index: 1000;
+                box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            }
+
+            .nav-links.active {
+                max-height: 500px;
+                padding: 20px 0;
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .nav-links li {
+                padding: 10px 30px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .nav-links li:last-child {
+                border-bottom: none;
+            }
+
+            .cta-btn {
+                display: block;
+                margin: 15px 30px 0;
+                text-align: center;
+            }
+
+            .hamburger {
+                display: block;
+            }
+
+            .nav-links li a::after {
+                display: none;
+            }
+        }
+
+        @media (max-width: 576px) {
+            nav {
+                padding: 15px 20px;
+            }
+
+            .logo img {
+                width: 50px;
+            }
+        }
+
+        section {
+            padding: 60px 10%;
+            position: relative;
+            z-index: 1;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInDown 1s ease-in-out;
+        }
+
+        .card-container {
+            display: flex;
+            overflow-x: auto;
+            gap: 20px;
+            padding-bottom: 10px;
+            scroll-snap-type: x mandatory;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            overflow: hidden;
+            min-width: 300px;
+            flex-shrink: 0;
+            transition: transform 0.5s;
+            scroll-snap-align: start;
+            animation: fadeInUp 1s ease-in-out;
+        }
+
+        .card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 255, 204, 0.2);
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .card-body h3 {
+            color: var(--primary);
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .card-body p {
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+
+        form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 40px;
+        }
+
+        input,
+        textarea {
+            background: #012020;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            width: 45%;
+            color: white;
+        }
+
+        textarea {
+            width: 94%;
+            height: 120px;
+        }
+
+        button[type="submit"] {
+            background: var(--primary);
+            color: #000;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        button[type="submit"]:hover {
+            background: white;
+            transform: translateY(-2px);
+        }
+
+        footer {
+            background: #002c2c;
+            color: #fff;
+            padding: 60px 10% 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            font-size: 0.95rem;
+        }
+
+        .footer-logo img {
+            width: 80px;
+            margin-bottom: 15px;
+        }
+
+        .footer-col h4 {
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .footer-col ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-col ul li a {
+            color: #ccc;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 8px;
+            transition: color 0.3s;
+        }
+
+        .footer-col ul li a:hover {
+            color: var(--primary);
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .footer-social a {
+            color: white;
+            font-size: 1.2rem;
+            transition: color 0.3s;
+        }
+
+        .footer-social a:hover {
+            color: var(--primary);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 30px;
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Mirror Break Transition Elements -->
+    <div class="transition-container" id="transitionContainer">
+        <div class="video-container">
+            <video class="video" autoplay muted loop>
+                <source src="https://res.cloudinary.com/dasm9k1z9/video/upload/v1750505565/5680034-hd_1920_1080_24fps_w0ywrb.mp4" type="video/mp4">
+                Your browser does not support HTML5 video.
+            </video>
+        </div>
+
+        <div class="broken-mirror" id="brokenMirror"></div>
+    </div>
+
+    <!-- Main Website Content (initially hidden) -->
+    <div id="main-website">
+        <div id="particles-js"></div>
+
+        <nav>
+            <div class="logo">
+                <img src="https://www.inlighntech.com/wp-content/uploads/2025/04/inlighn-tech-logo.png" alt="logo">
+            </div>
+
+            <div class="hamburger" id="hamburger">
+                <i class="fas fa-bars"></i>
+            </div>
+
+            <ul class="nav-links" id="navLinks">
+                <li><a href="https://animatedwebsire.ccbp.tech">Home</a></li>
+                <li><a href="https://iitabout.ccbp.tech/">About Us</a></li>
+                <li><a href="https://iitbprograms.ccbp.tech/">Programs</a></li>
+                <li><a href="https://iitbverify.ccbp.tech/">Verify Certificate</a></li>
+                <li><a href="https://iitbwhatspecial.ccbp.tech/" class="active">What's Special</a></li>
+                <li><a href="https://ittbcontact.ccbp.tech/">Contact Us</a></li>
+                <li><a href="https://iitblogin.ccbp.tech/" class="cta-btn">Login to Portal</a></li>
+            </ul>
+        </nav>
+
+        <section>
+            <h2 class="section-title">Perks & Benefits</h2>
+            <div class="card-container">
+                <div class="card" data-aos="fade-up">
+                    <div class="card-body">
+                        <h3>Internship Certificate</h3>
+                        <p>Get certified for your domain excellence.</p>
+                    </div>
+                </div>
+                <div class="card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card-body">
+                        <h3>Live Projects</h3>
+                        <p>Hands-on experience with real projects.</p>
+                    </div>
+                </div>
+                <div class="card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card-body">
+                        <h3>Mentorship</h3>
+                        <p>Personal guidance by experts and alumni.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2 class="section-title">Rules & Selection Process</h2>
+            <div class="card-container">
+                <div class="card" data-aos="fade-up">
+                    <div class="card-body">
+                        <h3>Eligibility</h3>
+                        <p>Open to all UG/PG students.</p>
+                    </div>
+                </div>
+                <div class="card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card-body">
+                        <h3>Screening Test</h3>
+                        <p>Online assessment based on your domain.</p>
+                    </div>
+                </div>
+                <div class="card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card-body">
+                        <h3>Final Interview</h3>
+                        <p>Interact with our panel for the final call.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2 class="section-title">How to Participate</h2>
+            <div class="card-container">
+                <div class="card" data-aos="fade-up">
+                    <div class="card-body">
+                        <h3>Step 1</h3>
+                        <p>Register through the form.</p>
+                    </div>
+                </div>
+                <div class="card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card-body">
+                        <h3>Step 2</h3>
+                        <p>Attempt the domain-specific test.</p>
+                    </div>
+                </div>
+                <div class="card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card-body">
+                        <h3>Step 3</h3>
+                        <p>Join orientation and start learning.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2 class="section-title">Our Project Interns</h2>
+            <div class="card-container">
+                <div class="card" data-aos="fade-up">
+                    <div class="card-body">
+                        <h3>Rahul</h3>
+                        <p>Built Smart Grocery System.</p>
+                    </div>
+                </div>
+                <div class="card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card-body">
+                        <h3>Charitha</h3>
+                        <p>Created AI Portfolio Generator.</p>
+                    </div>
+                </div>
+                <div class="card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card-body">
+                        <h3>Gayatri</h3>
+                        <p>Developed a ML-based chatbot.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2 class="section-title">Recognition</h2>
+            <div class="card-container">
+                <div class="card" data-aos="fade-up">
+                    <div class="card-body">
+                        <h3>Top Interns</h3>
+                        <p>Monthly top performers get reward letters.</p>
+                    </div>
+                </div>
+                <div class="card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card-body">
+                        <h3>Hall of Fame</h3>
+                        <p>Best interns featured on website.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2 class="section-title">Knowledge Through Videos</h2>
+            <div class="card-container">
+                <div class="card" data-aos="fade-up">
+                    <div class="card-body">
+                        <h3>Recorded Lectures</h3>
+                        <p>Get access to video content 24/7.</p>
+                    </div>
+                </div>
+                <div class="card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card-body">
+                        <h3>Live Demos</h3>
+                        <p>Attend our live project demonstrations.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2 class="section-title">Get In Touch</h2>
+            <form data-aos="fade-up">
+                <input type="text" placeholder="Full Name">
+                <input type="email" placeholder="Email">
+                <input type="text" placeholder="Domain of Internship">
+                <input type="text" placeholder="State">
+                <textarea placeholder="Message"></textarea>
+                <button type="submit">Submit</button>
+            </form>
+        </section>
+
+        <footer>
+            <div class="footer-col">
+                <div class="footer-logo">
+                    <img src="https://www.inlighntech.com/wp-content/uploads/2025/04/inlighn-tech-logo.png" alt="Inlighn Logo">
+                </div>
+                <p>At INLIGHN TECH, we believe in bridging the gap between learning and doing.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Menu</h4>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Programs</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="#">Privacy</a></li>
+                    <li><a href="#">Terms</a></li>
+                    <li><a href="#">FAQ</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Reach Us</h4>
+                <p><i class="fas fa-phone"></i> +91 9368842663</p>
+                <p><i class="fas fa-envelope"></i> info@inlighntech.com</p>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2025 INLIGHN TECH | Design by <span style="color:#ff6e6e">Gdscreatives</span></p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Create mirror pieces
+        const brokenMirror = document.getElementById('brokenMirror');
+        const rows = 10;
+        const cols = 10;
+
+        for (let i = 0; i < rows * cols; i++) {
+            const piece = document.createElement('div');
+            piece.className = 'mirror-piece';
+            brokenMirror.appendChild(piece);
+        }
+
+        // After 3 seconds, break the mirror and reveal website
+        setTimeout(() => {
+            // Animate mirror breaking
+            const pieces = document.querySelectorAll('.mirror-piece');
+            pieces.forEach((piece, index) => {
+                // Random animation properties
+                const delay = Math.random() * 0.5;
+                const rotation = (Math.random() * 60) - 30;
+                const x = (Math.random() * 200) - 100;
+                const y = (Math.random() * 200) - 100;
+                const scale = 0.5 + Math.random() * 0.5;
+
+                piece.style.transitionDelay = `${delay}s`;
+                piece.style.opacity = '0.8';
+                piece.style.transform = `scale(${scale}) rotate(${rotation}deg) translate(${x}px, ${y}px)`;
+                piece.style.background = 'rgba(0, 0, 0, 0.7)';
+            });
+
+            // Start showing main website after mirror breaks
+            setTimeout(() => {
+                document.getElementById('main-website').classList.add('show');
+                initParticles();
+                AOS.init({
+                    duration: 800,
+                    easing: 'ease-in-out',
+                    once: true
+                });
+            }, 800);
+
+            // Remove transition elements after all animations
+            setTimeout(() => {
+                document.getElementById('transitionContainer').style.display = 'none';
+            }, 3500);
+
+        }, 3000); // Start animation after 3 seconds
+
+        // Initialize particle.js
+        function initParticles() {
+            particlesJS("particles-js", {
+                "particles": {
+                    "number": {
+                        "value": 80,
+                        "density": {
+                            "enable": true,
+                            "value_area": 800
+                        }
+                    },
+                    "color": {
+                        "value": "#00ffc8"
+                    },
+                    "shape": {
+                        "type": "circle"
+                    },
+                    "opacity": {
+                        "value": 0.3
+                    },
+                    "size": {
+                        "value": 4
+                    },
+                    "line_linked": {
+                        "enable": true,
+                        "distance": 150,
+                        "color": "#00ffc8",
+                        "opacity": 0.2,
+                        "width": 1
+                    },
+                    "move": {
+                        "enable": true,
+                        "speed": 2
+                    }
+                },
+                "interactivity": {
+                    "events": {
+                        "onhover": {
+                            "enable": true,
+                            "mode": "grab"
+                        },
+                        "onclick": {
+                            "enable": true,
+                            "mode": "push"
+                        }
+                    },
+                    "modes": {
+                        "grab": {
+                            "distance": 200,
+                            "line_linked": {
+                                "opacity": 0.4
+                            }
+                        },
+                        "push": {
+                            "particles_nb": 4
+                        }
+                    }
+                },
+                "retina_detect": true
+            });
+        }
+
+        // Mobile Navigation Toggle
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('navLinks');
+
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+
+            // Change hamburger icon
+            const icon = hamburger.querySelector('i');
+            if (navLinks.classList.contains('active')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        });
+
+        // Close mobile menu when clicking on a link
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 992) {
+                    navLinks.classList.remove('active');
+                    const icon = hamburger.querySelector('i');
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-bars');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
